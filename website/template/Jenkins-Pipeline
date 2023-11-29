@@ -21,7 +21,7 @@ pipeline {
             steps {
                 script {
                     // Clone PHP website and Dockerfile from the Git repo
-                    git branch: 'master', credentialsId: 'Onewayshruti', url: 'https://github.com/OnewayShruti'
+                    git branch: 'master', credentialsId: 'Onewayshruti', url: 'https://github.com/OnewayShruti/projCert'
 
                     // Build and deploy Docker container
                     sh 'docker build . -t application-container-image:1 '
