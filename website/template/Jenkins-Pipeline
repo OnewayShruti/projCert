@@ -13,7 +13,7 @@ pipeline {
             steps {
                 script {
                     // Replace <ANSIBLE_PLAYBOOK_PATH> with the path to your Ansible playbook
-                    sh 'ansible-playbook -i /etc/ansible/hosts /path/to/docker-install.yml'
+                    sh 'ansible-playbook -i /etc/ansible/hosts /install-docker.yml'
                 }
             }
         }
