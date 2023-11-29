@@ -1,0 +1,47 @@
+pipeline {
+    agent { label 'slave-node' }
+    stages {
+        stage('Install and configure Puppet agent') {
+            steps {
+                script {
+                    // Replace <PUPPET_MASTER_IP> with the actual IP of your Puppet master
+                    sh 'curl -k https://192.168.1.100:8140/packages/current/install.bash | bash'
+                }
+            }
+        }
+        stage('Push Ansible configuration to install Docker') {
+            steps {
+                script {
+                    // Replace <ANSIBLE_PLAYBOOK_PATH> with the path to your Ansible playbook
+                    sh 'ansible-playbook -i /etc/ansible/hosts /path/to/docker-install.yml'
+                }
+            }
+        }
+        stage('Build and deploy PHP Docker container') {
+            steps {
+                script {
+                    // Clone PHP website and Dockerfile from the Git repo
+                    git branch: 'master', credentialsId: 'Onewayshruti', url: 'https://github.com/OnewayShruti'
+
+                    // Build and deploy Docker container
+                    sh 'docker build . -t application-container-image:1 '
+                    sh 'docker run -d -p 8080:80 application-container-image:1'
+                }
+            }
+        }
+        stage('Delete running container if Job 3 fails') {
+            steps {
+                catchError(buildResult: 'FAILURE', stageResult: 'FAILURE') {
+                    // Command to delete the running container
+                    sh 'docker stop $(docker ps -q)'
+                }
+            }
+        }
+    }
+    post {
+        always {
+            // Clean up: remove the cloned Git repository
+            cleanWs()
+        }
+    }
+}
